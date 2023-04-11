@@ -1,34 +1,49 @@
-import React from 'react'
-import './Featured.scss';
+
 import man from '../../assets/img/man.png';
 import search from '../../assets/img/search.png'
+import React, { useState } from "react";
+import "./Featured.scss";
+import { useNavigate } from "react-router-dom";
+
 function Featured() {
+  const [input, setInput] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = () => {
+    navigate(`/gigs?search=${input}`);
+  };
   return (
-    <div className='featured'>
-        <div className="container">
+    <div className="featured">
+      <div className="container">
         <div className="left">
-        <h1>Find the perfect <i>freelance</i> services for your business</h1>
-        <div className="search">
+          <h1>
+            Find the perfect <span>freelance</span> services for your business
+          </h1>
+          <div className="search">
             <div className="searchInput">
-                <img src={search} alt="" /> 
-                <input type="text" placeholder='Try building mobile app' />
+              <img src={search}alt="" />
+              <input
+                type="text"
+                placeholder='Try "building mobil app"'
+                onChange={(e) => setInput(e.target.value)}
+              />
             </div>
-            <button>Search</button>
-        </div>
-        <div className="popular">
+            <button onClick={handleSubmit}>Search</button>
+          </div>
+          <div className="popular">
             <span>Popular:</span>
             <button>Web Design</button>
-            <button>Wordpress</button>
+            <button>WordPress</button>
             <button>Logo Design</button>
             <button>AI Services</button>
-        </div>
+          </div>
         </div>
         <div className="right">
-        <img src={man} alt="" /> 
+          <img src={man} alt="" />
         </div>
-        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default Featured
+export default Featured;

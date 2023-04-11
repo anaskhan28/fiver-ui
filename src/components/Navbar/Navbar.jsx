@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import './Navbar.scss'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import noavatar from '../../assets/img/noavatar.jpeg';
+import axios from '../../utils/baseurl.js';
 function Navbar() {
   const [active, setActive] = useState(false)
   const [open, setOpen] = useState(false);
   const {pathname} = useLocation();
+
+  const navigate = useNavigate();
+
+
   
   const openNav = () =>{
     setOpen(!open)
@@ -21,10 +27,19 @@ function Navbar() {
     }
   })
 
-  const currentUser = {
-    id: 1,
-    username: "Anas Khan",
-    isSeller: true,
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+ 
+  const handleLogout = async() =>{
+    try{
+      const res = await axios.post("/auth/logout");
+      localStorage.setItem('currentUser', null);
+      navigate("/")
+
+      console.log(res.data)
+
+    }catch(error){
+      console.log(error)
+    }
   }
 
   return (
@@ -40,28 +55,42 @@ function Navbar() {
           <span>Fiverr Business</span>
           <span>Explore</span>
           <span>English</span>
-          <span>Sign In</span>
+          
          {!currentUser?.isSeller && <span>Become a Seller</span>}
-         {!currentUser && <button>Join</button> }
+
          {
-          currentUser && (
+          currentUser ? (
             <div className="user" onClick={openNav}>
-              <img src="https://media.istockphoto.com/id/1281804798/photo/very-closeup-view-of-amazing-domestic-pet-in-mirror-round-fashion-sunglasses-is-isolated-on.jpg?s=612x612&w=0&k=20&c=oMoz9rUr-rDhMGNmEepCkr7F1g3AXs9416hvVnT_4CI=" alt="" />
+              <img src={currentUser.img || noavatar } alt="" />
               <span>{currentUser?.username}</span>
-             { open && <div className="options">
+             { open && 
+             (<div className="options">
                 {currentUser?.isSeller && (
                   <>
                   <Link className='link' to='/mygigs'>Gigs</Link>
                   <Link className='link' to='/add'>Add New Gig</Link>
                   </>
                 )}
-                <Link className='link' to='/orders'>Orders</Link>
-                <Link className='link' to='/messages'>Messages</Link>
-                <Link className='link'>Logout</Link>
-              </div>}
+             <Link className="link" to="/orders">
+                    Orders
+                  </Link>
+                  <Link className="link" to="/messages">
+                    Messages
+                  </Link>
+                  <Link className="link" onClick={handleLogout}>
+                    Logout
+                  </Link>
+                </div>
+              )}
             </div>
-          )
-         }
+          ) : (
+            <>
+              <Link to="/login" className="link">Sign in</Link>
+              <Link className="link" to="/register">
+                <button>Join</button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
      {active || pathname !=='/' &&
